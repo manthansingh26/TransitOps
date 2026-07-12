@@ -134,6 +134,10 @@ The following are enforced transactionally in the database:
 9. Opening an active maintenance record sets the vehicle to **In Shop**.
 10. Closing maintenance restores the vehicle to **Available** (unless retired).
 
+## Support
+
+For questions, support, or issues, please open a GitHub Issue in the repository.
+
 ## License
 
 Built for the Odoo Hackathon 2026. Distributed under the MIT License.
