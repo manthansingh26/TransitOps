@@ -8,6 +8,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pi
 import { Truck, Users, Wrench, Route as RouteIcon, TrendingUp, Circle } from "lucide-react";
 import { useState, useMemo } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
@@ -41,7 +42,7 @@ function Dashboard() {
 
   const regions = useMemo(() => Array.from(new Set((data?.vehicles ?? []).map(v => v.region).filter(Boolean))), [data]);
 
-  if (isLoading || !data || !filtered) return <div className="text-muted-foreground">Loading dashboard…</div>;
+  if (isLoading || !data || !filtered) return <Spinner label="Loading dashboard…" />;
   const k = data.kpis;
 
   return (
@@ -118,15 +119,22 @@ function Dashboard() {
 }
 
 function Kpi({ icon: Icon, label, value, sub, accent }: { icon: typeof Truck; label: string; value: string | number; sub?: string; accent?: "blue" | "green" | "orange" | "gray" }) {
-  const color = accent === "blue" ? "text-blue-600" : accent === "green" ? "text-emerald-600" : accent === "orange" ? "text-amber-600" : accent === "gray" ? "text-gray-500" : "text-primary";
+  const tone = {
+    blue: { text: "text-blue-600", bg: "bg-blue-50 dark:bg-blue-900/30" },
+    green: { text: "text-emerald-600", bg: "bg-emerald-50 dark:bg-emerald-900/30" },
+    orange: { text: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-900/30" },
+    gray: { text: "text-slate-500", bg: "bg-slate-100 dark:bg-slate-800/50" },
+  }[accent ?? "gray"] ?? { text: "text-primary", bg: "bg-primary/10" };
   return (
-    <Card>
+    <Card className="transition-all hover:shadow-md hover:-translate-y-0.5">
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
-          <div className="text-xs text-muted-foreground">{label}</div>
-          <Icon className={`h-4 w-4 ${color}`} />
+          <div className="text-xs font-medium text-muted-foreground">{label}</div>
+          <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${tone.bg}`}>
+            <Icon className={`h-4 w-4 ${tone.text}`} />
+          </div>
         </div>
-        <div className="mt-1 text-2xl font-semibold">{value}</div>
+        <div className="mt-2 text-2xl font-bold tracking-tight">{value}</div>
         {sub && <div className="text-xs text-muted-foreground mt-1">{sub}</div>}
       </CardContent>
     </Card>

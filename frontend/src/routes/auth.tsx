@@ -76,15 +76,22 @@ function AuthPage() {
 
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-background">
-      <div className="hidden lg:flex flex-col justify-between p-12 bg-primary text-primary-foreground">
-        <Logo className="h-9 w-auto text-primary-foreground" />
-        <div>
-          <h1 className="text-4xl font-semibold leading-tight">Smart transport operations for modern logistics.</h1>
-          <p className="mt-4 text-primary-foreground/80 max-w-md">
+      <div className="relative hidden lg:flex flex-col justify-between p-12 bg-gradient-to-br from-[#0b1120] via-[#111a30] to-[#0b1120] text-white overflow-hidden">
+        <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-amber-500/10 blur-3xl" />
+        <div className="absolute bottom-0 left-0 h-64 w-64 rounded-full bg-teal-500/10 blur-3xl" />
+        <Logo className="relative h-9 w-auto text-white" />
+        <div className="relative">
+          <h1 className="text-4xl font-semibold leading-tight tracking-tight">Smart transport operations for modern logistics.</h1>
+          <p className="mt-4 text-slate-300 max-w-md leading-relaxed">
             Dispatch, monitor, and analyze your fleet with rules that keep drivers safe and vehicles moving.
           </p>
+          <div className="mt-8 flex gap-6 text-sm">
+            <div><div className="text-2xl font-bold text-amber-400">10</div><div className="text-slate-400">Business rules</div></div>
+            <div><div className="text-2xl font-bold text-amber-400">4</div><div className="text-slate-400">Roles</div></div>
+            <div><div className="text-2xl font-bold text-amber-400">Live</div><div className="text-slate-400">Dispatch</div></div>
+          </div>
         </div>
-        <p className="text-sm text-primary-foreground/70">© TransitOps</p>
+        <p className="relative text-sm text-slate-400">© TransitOps</p>
       </div>
 
       <div className="flex items-center justify-center p-6">

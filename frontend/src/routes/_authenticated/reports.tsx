@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
+import { Spinner } from "@/components/ui/spinner";
 import { getReports } from "@/lib/reports.functions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -18,7 +19,7 @@ export const Route = createFileRoute("/_authenticated/reports")({
 function ReportsPage() {
   const fn = useServerFn(getReports);
   const { data, isLoading } = useQuery({ queryKey: ["reports"], queryFn: () => fn() });
-  if (isLoading || !data) return <div className="text-muted-foreground">Loading reports…</div>;
+  if (isLoading || !data) return <Spinner label="Loading reports…" />;
 
   const { perVehicle, fleet } = data;
 
@@ -39,7 +40,7 @@ function ReportsPage() {
             <TooltipProvider><UITooltip><TooltipTrigger asChild><Info className="h-3 w-3 inline" /></TooltipTrigger><TooltipContent>Revenue is manually entered per trip; ROI uses fuel + maintenance only.</TooltipContent></UITooltip></TooltipProvider>
           </p>
         </div>
-        <Button onClick={exportCsv} variant="outline"><Download className="h-4 w-4 mr-1" />Export CSV</Button>
+        <Button onClick={exportCsv} variant="outline" className="shadow-sm hover:shadow transition-shadow"><Download className="h-4 w-4 mr-2" />Export CSV</Button>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
