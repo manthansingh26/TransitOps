@@ -118,7 +118,8 @@ All demo users share the password `Demo1234!`:
 └── vite.config.ts
 ```
 
-## Business Rules
+## Business Rules  
+
 
 The following are enforced transactionally in the database:
 
