@@ -136,4 +136,4 @@ The following are enforced transactionally in the database:
 
 ## License
 
-Built for the Odoo Hackathon 2026.
+Built for the Odoo Hackathon 2026. Distributed under the MIT License.
