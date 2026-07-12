@@ -1,5 +1,6 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Truck, LayoutDashboard, Users, Route as RouteIcon, Wrench, Fuel, Receipt, BarChart3, LogOut, Menu, ShieldCheck } from "lucide-react";
+import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { logout } from "@/lib/api";
@@ -44,8 +45,8 @@ export function AppShell({ children }: { children: ReactNode }) {
     <div className="min-h-screen bg-muted/30 flex">
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex w-64 flex-col border-r bg-background">
-        <div className="p-4 border-b flex items-center gap-2 font-semibold">
-          <Truck className="h-5 w-5 text-primary" /> TransitOps
+        <div className="p-4 border-b flex items-center">
+          <Logo className="h-7 w-auto text-foreground" />
         </div>
         <NavList items={items} onNavigate={() => {}} />
         <div className="p-3 border-t space-y-2">
@@ -61,15 +62,13 @@ export function AppShell({ children }: { children: ReactNode }) {
 
       <div className="flex-1 flex flex-col min-w-0">
         <header className="lg:hidden border-b bg-background flex items-center justify-between px-4 py-2">
-          <div className="flex items-center gap-2 font-semibold">
-            <Truck className="h-5 w-5 text-primary" /> TransitOps
-          </div>
+          <Logo className="h-6 w-auto text-foreground" />
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild><Button size="icon" variant="ghost"><Menu /></Button></SheetTrigger>
             <SheetContent side="left" className="p-0 w-64">
               <SheetTitle className="sr-only">Navigation</SheetTitle>
-              <div className="p-4 border-b flex items-center gap-2 font-semibold">
-                <Truck className="h-5 w-5 text-primary" /> TransitOps
+              <div className="p-4 border-b flex items-center">
+                <Logo className="h-6 w-auto text-foreground" />
               </div>
               <NavList items={items} onNavigate={() => setOpen(false)} />
               <div className="p-3 border-t">

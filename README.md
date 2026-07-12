@@ -23,6 +23,16 @@ _Built for Odoo Hackathon 2026._
 
 Many logistics teams still run on spreadsheets and manual logbooks, leading to scheduling conflicts, underused vehicles, missed maintenance, expired licenses, and poor cost visibility. TransitOps centralizes the entire transport lifecycle in one platform and enforces the rules that keep operations safe and consistent.
 
+## Features
+
+- **Authentication & RBAC** — JWT login with four roles, enforced on both the API and the UI (role-based menus).
+- **Vehicle registry** — full CRUD with unique registration numbers, capacity, odometer, and lifecycle status.
+- **Driver management** — license validity tracking, safety scores, and status.
+- **Trip dispatch** — create → dispatch → complete/cancel, with a full status timeline and live eligibility checks.
+- **Maintenance workflow** — opening/closing records automatically syncs vehicle availability.
+- **Fuel & expense tracking** — per-vehicle operational cost.
+- **Dashboard & reports** — fleet utilization, fuel efficiency, operational cost, and vehicle ROI, with CSV export.
+
 ## Monorepo Structure
 
 ```
@@ -103,13 +113,22 @@ Password for all: `Demo1234!`
 9. Opening an active maintenance record sets the vehicle to **In Shop**.
 10. Closing maintenance restores the vehicle to **Available** (unless retired).
 
+## Demo Flow
+
+1. Sign in as **Fleet Manager** (`manager@transitops.demo` / `Demo1234!`).
+2. Open **Trips** — each row shows its assigned vehicle and driver.
+3. **New trip** — only available vehicles and valid-license drivers are listed; cargo over capacity is blocked inline.
+4. **Dispatch** a draft trip → the vehicle and driver flip to **On Trip**.
+5. **Complete** the trip (enter odometer + fuel) → both return to **Available**.
+6. **Maintenance** — open a record → vehicle becomes **In Shop**; close it → back to **Available**.
+7. Explore **Reports** (fuel efficiency, operational cost, ROI, CSV export) and sign in as other roles to see role-based access.
+
 ## Roadmap
 
 - [x] Local PostgreSQL schema + FastAPI backend (auth, RBAC, CRUD, business rules)
 - [x] Demo data seeding
 - [x] React frontend (dashboard, vehicles, drivers, trips, maintenance, fuel, expenses, reports)
-- [ ] Wire the frontend data layer to the FastAPI backend
-- [ ] Reports CSV export polish
+- [x] Frontend wired to the FastAPI backend with JWT auth
 - [ ] Optional: PDF export, license-expiry email reminders, dark mode
 
 ## License

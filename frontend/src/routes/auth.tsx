@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Truck } from "lucide-react";
+import { Logo } from "@/components/logo";
 
 export const Route = createFileRoute("/auth")({
   component: AuthPage,
@@ -77,9 +77,7 @@ function AuthPage() {
   return (
     <div className="min-h-screen grid lg:grid-cols-2 bg-background">
       <div className="hidden lg:flex flex-col justify-between p-12 bg-primary text-primary-foreground">
-        <div className="flex items-center gap-2 text-xl font-semibold">
-          <Truck className="h-6 w-6" /> TransitOps
-        </div>
+        <Logo className="h-9 w-auto text-primary-foreground" />
         <div>
           <h1 className="text-4xl font-semibold leading-tight">Smart transport operations for modern logistics.</h1>
           <p className="mt-4 text-primary-foreground/80 max-w-md">

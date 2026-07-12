@@ -1,6 +1,0 @@
-{
-  "buildCommand": "cd frontend && NITRO_PRESET=vercel npm run build",
-  "installCommand": "cd frontend && npm install",
-  "outputDirectory": "frontend/.vercel/output",
-  "framework": null
-}
