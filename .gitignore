@@ -37,3 +37,6 @@ Thumbs.db
 # ===== Cloudflare / Wrangler =====
 .wrangler/
 .dev.vars
+
+# Vercel build output
+.vercel/
