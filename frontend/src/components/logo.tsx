@@ -1,47 +1,46 @@
 /**
  * TransitOps brand logo.
  *
- * Wordmark "TransitOps" with a gold "O" accent and a coach/bus glyph.
- * The text uses `currentColor` so it renders correctly on both the dark
- * auth panel (white) and the light sidebar (dark).
+ * Wordmark "TransitOps" with a gold "O" accent and a compact coach/bus glyph
+ * that sits directly after the text on the same baseline. Uses `currentColor`
+ * so it renders correctly on the dark auth panel (white) and the light
+ * sidebar (dark). The viewBox is fitted so it never floats or misaligns.
  */
 export function Logo({ className }: { className?: string }) {
   return (
     <svg
-      viewBox="0 0 248 44"
+      viewBox="0 0 226 36"
       className={className}
       role="img"
       aria-label="TransitOps"
       xmlns="http://www.w3.org/2000/svg"
+      fill="none"
     >
       <text
         x="0"
-        y="32"
+        y="27"
         fontFamily="'Segoe UI', system-ui, -apple-system, sans-serif"
-        fontSize="32"
+        fontSize="28"
         fontWeight="700"
-        letterSpacing="-1"
+        letterSpacing="-0.5"
         fill="currentColor"
       >
         Transit<tspan fill="#C79A3F">O</tspan>ps
       </text>
 
-      {/* Coach / bus glyph */}
+      {/* Coach glyph, baseline-aligned with the text */}
       <g
-        transform="translate(198,9)"
-        fill="none"
+        transform="translate(184,8)"
         stroke="currentColor"
-        strokeWidth="2.4"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        opacity="0.9"
       >
-        <path d="M2 4 h30 a6 6 0 0 1 6 6 v10 a2 2 0 0 1 -2 2 h-4" />
-        <path d="M2 22 h22" />
-        <path d="M2 4 v18" />
-        <path d="M2 12 h36" />
-        <circle cx="10" cy="24" r="3.2" fill="currentColor" stroke="none" />
-        <circle cx="30" cy="24" r="3.2" fill="currentColor" stroke="none" />
+        <rect x="1" y="2" width="36" height="16" rx="4" />
+        <line x1="1" y1="9" x2="37" y2="9" />
+        <line x1="13" y1="2" x2="13" y2="9" />
+        <circle cx="11" cy="20" r="2.6" fill="currentColor" stroke="none" />
+        <circle cx="28" cy="20" r="2.6" fill="currentColor" stroke="none" />
       </g>
     </svg>
   );
