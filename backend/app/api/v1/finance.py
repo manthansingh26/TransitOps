@@ -14,9 +14,19 @@ router = APIRouter(tags=["finance"])
 _WRITE_ROLES = (AppRole.FLEET_MANAGER, AppRole.FINANCIAL_ANALYST)
 
 
-@router.get("/fuel", response_model=list[FuelRead])
+@router.get("/fuel")
 def list_fuel(db: Session = Depends(get_db), _: User = Depends(get_current_user)):
-    return db.scalars(select(FuelLog).order_by(FuelLog.date.desc())).all()
+    logs = db.scalars(select(FuelLog).order_by(FuelLog.date.desc())).all()
+    out = []
+    for f in logs:
+        d = FuelRead.model_validate(f).model_dump(mode="json")
+        d["vehicle"] = (
+            {"registration_number": f.vehicle.registration_number, "model": f.vehicle.model}
+            if f.vehicle
+            else None
+        )
+        out.append(d)
+    return out
 
 
 @router.post("/fuel", response_model=FuelRead, status_code=201)
@@ -32,9 +42,19 @@ def create_fuel(
     return log
 
 
-@router.get("/expenses", response_model=list[ExpenseRead])
+@router.get("/expenses")
 def list_expenses(db: Session = Depends(get_db), _: User = Depends(get_current_user)):
-    return db.scalars(select(Expense).order_by(Expense.date.desc())).all()
+    rows = db.scalars(select(Expense).order_by(Expense.date.desc())).all()
+    out = []
+    for e in rows:
+        d = ExpenseRead.model_validate(e).model_dump(mode="json")
+        d["vehicle"] = (
+            {"registration_number": e.vehicle.registration_number, "model": e.vehicle.model}
+            if e.vehicle
+            else None
+        )
+        out.append(d)
+    return out
 
 
 @router.post("/expenses", response_model=ExpenseRead, status_code=201)

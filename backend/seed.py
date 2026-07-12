@@ -106,15 +106,17 @@ def run():
             # --- Trips across all lifecycle states ---
             avail_v = [v for v in vehicles if v.status == VehicleStatus.AVAILABLE]
             avail_d = [d for d in drivers if d.status == DriverStatus.AVAILABLE]
+            # Reserve the first available vehicle+driver as a live "dispatched" trip.
             for i in range(10):
                 v = avail_v[i % len(avail_v)]
                 d = avail_d[i % len(avail_d)]
                 status = [
                     TripStatus.COMPLETED,
-                    TripStatus.COMPLETED,
+                    TripStatus.DISPATCHED,
                     TripStatus.DRAFT,
                     TripStatus.CANCELLED,
-                ][i % 4]
+                    TripStatus.COMPLETED,
+                ][i % 5]
                 t = Trip(
                     source=f"City {i}",
                     destination=f"City {i + 5}",
@@ -128,6 +130,10 @@ def run():
                 if status == TripStatus.COMPLETED:
                     t.actual_distance_km = t.planned_distance_km + 5
                     t.fuel_consumed_liters = t.planned_distance_km / 8
+                elif status == TripStatus.DISPATCHED:
+                    # Live trip: vehicle + driver must reflect On Trip status.
+                    v.status = VehicleStatus.ON_TRIP
+                    d.status = DriverStatus.ON_TRIP
                 db.add(t)
             db.commit()
 

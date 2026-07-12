@@ -169,6 +169,7 @@ def close_maintenance(db: Session, log_id: int) -> MaintenanceLog:
 
     log.status = MaintenanceStatus.CLOSED
     log.closed_at = datetime.now(timezone.utc)
+    db.flush()  # ensure the closed status is visible to the count query below
 
     vehicle = db.get(Vehicle, log.vehicle_id)
     active_count = (

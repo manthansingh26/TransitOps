@@ -13,9 +13,19 @@ from app.services import business
 router = APIRouter(prefix="/maintenance", tags=["maintenance"])
 
 
-@router.get("", response_model=list[MaintenanceRead])
+@router.get("")
 def list_maintenance(db: Session = Depends(get_db), _: User = Depends(get_current_user)):
-    return db.scalars(select(MaintenanceLog).order_by(MaintenanceLog.opened_at.desc())).all()
+    logs = db.scalars(select(MaintenanceLog).order_by(MaintenanceLog.opened_at.desc())).all()
+    out = []
+    for m in logs:
+        d = MaintenanceRead.model_validate(m).model_dump(mode="json")
+        d["vehicle"] = (
+            {"registration_number": m.vehicle.registration_number, "model": m.vehicle.model}
+            if m.vehicle
+            else None
+        )
+        out.append(d)
+    return out
 
 
 @router.post("", response_model=MaintenanceRead, status_code=201)

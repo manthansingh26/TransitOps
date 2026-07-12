@@ -17,9 +17,9 @@ const NAV: Item[] = [
   { to: "/vehicles", label: "Vehicles", icon: Truck, show: () => true },
   { to: "/drivers", label: "Drivers", icon: Users, show: () => true },
   { to: "/trips", label: "Trips", icon: RouteIcon, show: () => true },
-  { to: "/maintenance", label: "Maintenance", icon: Wrench, show: (r) => can.writeMaintenance(r) || r === "financial_analyst" },
-  { to: "/fuel", label: "Fuel", icon: Fuel, show: () => true },
-  { to: "/expenses", label: "Expenses", icon: Receipt, show: () => true },
+  { to: "/maintenance", label: "Maintenance", icon: Wrench, show: (r) => r === "fleet_manager" },
+  { to: "/fuel", label: "Fuel", icon: Fuel, show: (r) => r === "fleet_manager" || r === "financial_analyst" },
+  { to: "/expenses", label: "Expenses", icon: Receipt, show: (r) => r === "fleet_manager" || r === "financial_analyst" },
   { to: "/reports", label: "Reports", icon: BarChart3, show: () => true },
   { to: "/users", label: "Users", icon: ShieldCheck, show: (r) => can.manageUsers(r) },
 ];

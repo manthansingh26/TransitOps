@@ -13,9 +13,28 @@ from app.services import business
 router = APIRouter(prefix="/trips", tags=["trips"])
 
 
-@router.get("", response_model=list[TripRead])
+@router.get("")
 def list_trips(db: Session = Depends(get_db), _: User = Depends(get_current_user)):
-    return db.scalars(select(Trip).order_by(Trip.created_at.desc())).all()
+    trips = db.scalars(select(Trip).order_by(Trip.created_at.desc())).all()
+    out = []
+    for t in trips:
+        d = TripRead.model_validate(t).model_dump(mode="json")
+        d["vehicle"] = (
+            {
+                "registration_number": t.vehicle.registration_number,
+                "model": t.vehicle.model,
+                "max_load_capacity_kg": t.vehicle.max_load_capacity_kg,
+            }
+            if t.vehicle
+            else None
+        )
+        d["driver"] = (
+            {"name": t.driver.name, "license_expiry_date": t.driver.license_expiry_date.isoformat()}
+            if t.driver
+            else None
+        )
+        out.append(d)
+    return out
 
 
 @router.get("/meta/eligible")
