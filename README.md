@@ -115,3 +115,4 @@ Password for all: `Demo1234!`
 ## License
 
 Built for the Odoo Hackathon 2026.
+
