@@ -2,6 +2,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.v1 import auth
 from app.core.config import settings
 
 app = FastAPI(
@@ -24,6 +25,10 @@ def health_check() -> dict[str, str]:
     return {"status": "ok", "service": settings.PROJECT_NAME}
 
 
-# Routers are registered here as they are built, e.g.:
-# from app.api.v1 import auth, vehicles, drivers, trips
-# app.include_router(auth.router, prefix=settings.API_V1_PREFIX)
+# --- Routers ---
+app.include_router(auth.router, prefix=settings.API_V1_PREFIX)
+
+# Registered as they are built:
+# app.include_router(vehicles.router, prefix=settings.API_V1_PREFIX)
+# app.include_router(drivers.router, prefix=settings.API_V1_PREFIX)
+# app.include_router(trips.router, prefix=settings.API_V1_PREFIX)
