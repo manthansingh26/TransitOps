@@ -52,3 +52,18 @@ def update_driver(
     db.commit()
     db.refresh(driver)
     return driver
+
+
+@router.delete("/{driver_id}", status_code=204)
+def delete_driver(
+    driver_id: int,
+    db: Session = Depends(get_db),
+    _: User = Depends(require_roles(*_WRITE_ROLES)),
+):
+    driver = db.get(Driver, driver_id)
+    if driver is None:
+        raise HTTPException(status_code=404, detail="Driver not found")
+    if driver.trips:
+        raise HTTPException(status_code=409, detail="Cannot delete a driver with trip history")
+    db.delete(driver)
+    db.commit()

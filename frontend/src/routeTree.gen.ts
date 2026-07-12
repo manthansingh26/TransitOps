@@ -21,7 +21,6 @@ import { Route as AuthenticatedFuelRouteImport } from './routes/_authenticated/f
 import { Route as AuthenticatedExpensesRouteImport } from './routes/_authenticated/expenses'
 import { Route as AuthenticatedDriversRouteImport } from './routes/_authenticated/drivers'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as ApiPublicSeedDemoUsersRouteImport } from './routes/api/public/seed-demo-users'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -83,11 +82,6 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const ApiPublicSeedDemoUsersRoute = ApiPublicSeedDemoUsersRouteImport.update({
-  id: '/api/public/seed-demo-users',
-  path: '/api/public/seed-demo-users',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -101,7 +95,6 @@ export interface FileRoutesByFullPath {
   '/trips': typeof AuthenticatedTripsRoute
   '/users': typeof AuthenticatedUsersRoute
   '/vehicles': typeof AuthenticatedVehiclesRoute
-  '/api/public/seed-demo-users': typeof ApiPublicSeedDemoUsersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -115,7 +108,6 @@ export interface FileRoutesByTo {
   '/trips': typeof AuthenticatedTripsRoute
   '/users': typeof AuthenticatedUsersRoute
   '/vehicles': typeof AuthenticatedVehiclesRoute
-  '/api/public/seed-demo-users': typeof ApiPublicSeedDemoUsersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -131,7 +123,6 @@ export interface FileRoutesById {
   '/_authenticated/trips': typeof AuthenticatedTripsRoute
   '/_authenticated/users': typeof AuthenticatedUsersRoute
   '/_authenticated/vehicles': typeof AuthenticatedVehiclesRoute
-  '/api/public/seed-demo-users': typeof ApiPublicSeedDemoUsersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -147,7 +138,6 @@ export interface FileRouteTypes {
     | '/trips'
     | '/users'
     | '/vehicles'
-    | '/api/public/seed-demo-users'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -161,7 +151,6 @@ export interface FileRouteTypes {
     | '/trips'
     | '/users'
     | '/vehicles'
-    | '/api/public/seed-demo-users'
   id:
     | '__root__'
     | '/'
@@ -176,14 +165,12 @@ export interface FileRouteTypes {
     | '/_authenticated/trips'
     | '/_authenticated/users'
     | '/_authenticated/vehicles'
-    | '/api/public/seed-demo-users'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
-  ApiPublicSeedDemoUsersRoute: typeof ApiPublicSeedDemoUsersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -272,13 +259,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/api/public/seed-demo-users': {
-      id: '/api/public/seed-demo-users'
-      path: '/api/public/seed-demo-users'
-      fullPath: '/api/public/seed-demo-users'
-      preLoaderRoute: typeof ApiPublicSeedDemoUsersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -313,7 +293,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
-  ApiPublicSeedDemoUsersRoute: ApiPublicSeedDemoUsersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

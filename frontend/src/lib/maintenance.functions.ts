@@ -1,40 +1,31 @@
-import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { z } from "zod";
+import { api } from "@/lib/api";
+import type { Vehicle } from "@/lib/vehicles.functions";
 
-export const getMaintenance = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { data, error } = await context.supabase
-      .from("maintenance_logs")
-      .select("*, vehicle:vehicles(registration_number,model)")
-      .order("opened_at", { ascending: false });
-    if (error) throw new Error(error.message);
-    return data;
-  });
+export interface MaintenanceLog {
+  id: number;
+  vehicle_id: number;
+  description: string;
+  cost: number;
+  status: "active" | "closed";
+  opened_at: string;
+  closed_at: string | null;
+  vehicle?: Pick<Vehicle, "registration_number" | "model">;
+}
 
-export const openMaintenance = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({
-    vehicle_id: z.string().uuid(),
-    description: z.string().min(1),
-    cost: z.number().nonnegative(),
-  }).parse(d))
-  .handler(async ({ data, context }) => {
-    const { error } = await context.supabase.rpc("open_maintenance", {
-      _vehicle_id: data.vehicle_id,
-      _description: data.description,
-      _cost: data.cost,
-    });
-    if (error) throw new Error(error.message);
-    return { ok: true };
-  });
+export const getMaintenance = () => api.get<MaintenanceLog[]>("/maintenance");
 
-export const closeMaintenance = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ id: z.string().uuid() }).parse(d))
-  .handler(async ({ data, context }) => {
-    const { error } = await context.supabase.rpc("close_maintenance", { _id: data.id });
-    if (error) throw new Error(error.message);
-    return { ok: true };
-  });
+interface OpenMaintenanceInput {
+  vehicle_id: number;
+  description: string;
+  cost: number;
+}
+
+export const openMaintenance = async ({ data }: { data: OpenMaintenanceInput }) => {
+  await api.post("/maintenance", data);
+  return { ok: true };
+};
+
+export const closeMaintenance = async ({ data }: { data: { id: number } }) => {
+  await api.post(`/maintenance/${data.id}/close`);
+  return { ok: true };
+};

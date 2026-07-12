@@ -2,7 +2,7 @@ import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { Truck, LayoutDashboard, Users, Route as RouteIcon, Wrench, Fuel, Receipt, BarChart3, LogOut, Menu, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { supabase } from "@/integrations/supabase/client";
+import { logout } from "@/lib/api";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useCurrentUser, roleLabel, can, type AppRole } from "@/hooks/use-current-user";
@@ -33,7 +33,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   async function signOut() {
     await qc.cancelQueries();
     qc.clear();
-    await supabase.auth.signOut();
+    logout();
     toast.success("Signed out");
     navigate({ to: "/auth", replace: true });
   }

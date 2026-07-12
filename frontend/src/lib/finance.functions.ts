@@ -1,58 +1,54 @@
-import { createServerFn } from "@tanstack/react-start";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { z } from "zod";
+import { api } from "@/lib/api";
+import type { Vehicle } from "@/lib/vehicles.functions";
 
-export const getFuelLogs = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { data, error } = await context.supabase
-      .from("fuel_logs")
-      .select("*, vehicle:vehicles(registration_number,model)")
-      .order("date", { ascending: false });
-    if (error) throw new Error(error.message);
-    return data;
-  });
+export interface FuelLog {
+  id: number;
+  vehicle_id: number;
+  liters: number;
+  cost: number;
+  date: string;
+  odometer_at_fill: number | null;
+  created_at: string;
+  vehicle?: Pick<Vehicle, "registration_number" | "model">;
+}
 
-export const createFuelLog = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({
-    vehicle_id: z.string().uuid(),
-    liters: z.number().positive(),
-    cost: z.number().nonnegative(),
-    date: z.string(),
-    odometer_at_fill: z.number().nonnegative().optional(),
-  }).parse(d))
-  .handler(async ({ data, context }) => {
-    const { error } = await context.supabase.from("fuel_logs").insert(data);
-    if (error) throw new Error(error.message);
-    return { ok: true };
-  });
+export interface Expense {
+  id: number;
+  vehicle_id: number | null;
+  category: "toll" | "fine" | "insurance" | "other";
+  amount: number;
+  date: string;
+  description: string;
+  created_at: string;
+  vehicle?: Pick<Vehicle, "registration_number" | "model">;
+}
 
-export const getExpenses = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
-  .handler(async ({ context }) => {
-    const { data, error } = await context.supabase
-      .from("expenses")
-      .select("*, vehicle:vehicles(registration_number,model)")
-      .order("date", { ascending: false });
-    if (error) throw new Error(error.message);
-    return data;
-  });
+export const getFuelLogs = () => api.get<FuelLog[]>("/fuel");
 
-export const createExpense = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({
-    vehicle_id: z.string().uuid().nullable().optional(),
-    category: z.enum(["toll", "fine", "insurance", "other"]),
-    amount: z.number().nonnegative(),
-    date: z.string(),
-    description: z.string().max(500).default(""),
-  }).parse(d))
-  .handler(async ({ data, context }) => {
-    const { error } = await context.supabase.from("expenses").insert({
-      ...data,
-      vehicle_id: data.vehicle_id || null,
-    });
-    if (error) throw new Error(error.message);
-    return { ok: true };
-  });
+interface FuelInput {
+  vehicle_id: number;
+  liters: number;
+  cost: number;
+  date: string;
+  odometer_at_fill?: number;
+}
+
+export const createFuelLog = async ({ data }: { data: FuelInput }) => {
+  await api.post("/fuel", data);
+  return { ok: true };
+};
+
+export const getExpenses = () => api.get<Expense[]>("/expenses");
+
+interface ExpenseInput {
+  vehicle_id?: number | null;
+  category: "toll" | "fine" | "insurance" | "other";
+  amount: number;
+  date: string;
+  description: string;
+}
+
+export const createExpense = async ({ data }: { data: ExpenseInput }) => {
+  await api.post("/expenses", { ...data, vehicle_id: data.vehicle_id || null });
+  return { ok: true };
+};

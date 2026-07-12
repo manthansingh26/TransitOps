@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { login, signup, getToken } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,49 +25,38 @@ function AuthPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [fullName, setFullName] = useState("");
   const [busy, setBusy] = useState(false);
-  const [seeding, setSeeding] = useState(false);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) navigate({ to: "/dashboard", replace: true });
-    });
+    if (getToken()) navigate({ to: "/dashboard", replace: true });
   }, [navigate]);
 
   async function signIn(e?: React.FormEvent) {
     e?.preventDefault();
     setBusy(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setBusy(false);
-    if (error) return toast.error(error.message);
-    toast.success("Signed in");
-    navigate({ to: "/dashboard", replace: true });
+    try {
+      await login(email, password);
+      toast.success("Signed in");
+      navigate({ to: "/dashboard", replace: true });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Sign in failed");
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function signUp(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
-    const { error } = await supabase.auth.signUp({
-      email, password,
-      options: { emailRedirectTo: window.location.origin },
-    });
-    setBusy(false);
-    if (error) return toast.error(error.message);
-    toast.success("Account created — signing you in");
-    signIn();
-  }
-
-  async function seedDemo() {
-    setSeeding(true);
     try {
-      const res = await fetch("/api/public/seed-demo-users", { method: "POST" });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Seed failed");
-      toast.success("Demo accounts ready");
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Seed failed");
+      await signup(fullName || email.split("@")[0], email, password);
+      toast.success("Account created");
+      navigate({ to: "/dashboard", replace: true });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Sign up failed");
     } finally {
-      setSeeding(false);
+      setBusy(false);
     }
   }
 
@@ -75,20 +64,14 @@ function AuthPage() {
     setEmail(demoEmail);
     setPassword(DEMO_PASSWORD);
     setBusy(true);
-    const { error } = await supabase.auth.signInWithPassword({ email: demoEmail, password: DEMO_PASSWORD });
-    if (error && error.message.toLowerCase().includes("invalid")) {
-      toast.info("Seeding demo accounts...");
-      await seedDemo();
-      const retry = await supabase.auth.signInWithPassword({ email: demoEmail, password: DEMO_PASSWORD });
-      setBusy(false);
-      if (retry.error) return toast.error(retry.error.message);
-    } else if (error) {
-      setBusy(false);
-      return toast.error(error.message);
-    } else {
+    try {
+      await login(demoEmail, DEMO_PASSWORD);
+      navigate({ to: "/dashboard", replace: true });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Sign in failed");
+    } finally {
       setBusy(false);
     }
-    navigate({ to: "/dashboard", replace: true });
   }
 
   return (
@@ -127,8 +110,9 @@ function AuthPage() {
               </TabsContent>
               <TabsContent value="signup">
                 <form onSubmit={signUp} className="space-y-3 mt-4">
+                  <div><Label>Full name</Label><Input required value={fullName} onChange={e => setFullName(e.target.value)} /></div>
                   <div><Label>Email</Label><Input type="email" required value={email} onChange={e => setEmail(e.target.value)} /></div>
-                  <div><Label>Password</Label><Input type="password" required minLength={8} value={password} onChange={e => setPassword(e.target.value)} /></div>
+                  <div><Label>Password</Label><Input type="password" required minLength={6} value={password} onChange={e => setPassword(e.target.value)} /></div>
                   <p className="text-xs text-muted-foreground">New signups default to the Driver role. A Fleet Manager can promote you later.</p>
                   <Button type="submit" className="w-full" disabled={busy}>{busy ? "Creating…" : "Create account"}</Button>
                 </form>
@@ -139,13 +123,10 @@ function AuthPage() {
               <p className="text-xs text-muted-foreground mb-2">Demo accounts (password: <code>{DEMO_PASSWORD}</code>)</p>
               <div className="grid grid-cols-2 gap-2">
                 {DEMO_USERS.map(u => (
-                  <Button key={u.email} variant="outline" size="sm" disabled={busy || seeding}
+                  <Button key={u.email} variant="outline" size="sm" disabled={busy}
                     onClick={() => loginAs(u.email)}>{u.role}</Button>
                 ))}
               </div>
-              <Button variant="ghost" size="sm" className="w-full mt-2" disabled={seeding} onClick={seedDemo}>
-                {seeding ? "Seeding…" : "Re-seed demo accounts"}
-              </Button>
             </div>
           </CardContent>
         </Card>

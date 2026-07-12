@@ -1,35 +1,24 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import type { User } from "@supabase/supabase-js";
-import type { Database } from "@/integrations/supabase/types";
+import { getStoredUser, getToken, type AppRole, type AuthUser } from "@/lib/api";
 
-export type AppRole = Database["public"]["Enums"]["app_role"];
+export type { AppRole };
 
 export function useCurrentUser() {
-  const [user, setUser] = useState<User | null | undefined>(undefined);
+  const [user, setUser] = useState<AuthUser | null | undefined>(undefined);
   const [role, setRole] = useState<AppRole | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
-    async function load(u: User | null) {
-      if (!u) { setRole(null); setLoading(false); return; }
-      const { data } = await supabase.from("user_roles").select("role").eq("user_id", u.id).limit(1).maybeSingle();
-      if (!mounted) return;
-      setRole((data?.role as AppRole) ?? null);
-      setLoading(false);
+    const token = getToken();
+    const stored = getStoredUser();
+    if (token && stored) {
+      setUser(stored);
+      setRole(stored.role);
+    } else {
+      setUser(null);
+      setRole(null);
     }
-    supabase.auth.getUser().then(({ data }) => {
-      if (!mounted) return;
-      setUser(data.user);
-      load(data.user);
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      setUser(session?.user ?? null);
-      setLoading(true);
-      load(session?.user ?? null);
-    });
-    return () => { mounted = false; sub.subscription.unsubscribe(); };
+    setLoading(false);
   }, []);
 
   return { user, role, loading };
@@ -37,11 +26,16 @@ export function useCurrentUser() {
 
 export const roleLabel = (r: AppRole | null) => {
   switch (r) {
-    case "fleet_manager": return "Fleet Manager";
-    case "driver": return "Driver";
-    case "safety_officer": return "Safety Officer";
-    case "financial_analyst": return "Financial Analyst";
-    default: return "—";
+    case "fleet_manager":
+      return "Fleet Manager";
+    case "driver":
+      return "Driver";
+    case "safety_officer":
+      return "Safety Officer";
+    case "financial_analyst":
+      return "Financial Analyst";
+    default:
+      return "—";
   }
 };
 
